@@ -72,7 +72,10 @@ class ParticleList:
         return [particle.E for particle in self.list]
 
     def getBTag(self):
-        return [particle.bTag for particle in self.list]
+        if self.name == 'Jet':
+            return [particle.bTag for particle in self.list]
+        else:
+            pass
 
 
 # define a list of all particle lists
@@ -136,5 +139,5 @@ for particle in ParticleLists:
         plt.xlabel('bTag')
         plt.ylabel('Number of particles')
         plt.title(str(particle))
-        print('Done with ' + str(particle))
+        print('Done with Jet BTag')
         plt.show()
