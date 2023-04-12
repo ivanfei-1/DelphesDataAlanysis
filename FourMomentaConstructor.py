@@ -71,6 +71,9 @@ class ParticleList:
     def getE(self):
         return [particle.E for particle in self.list]
 
+    def getBTag(self):
+        return [particle.bTag for particle in self.list]
+
 
 # define a list of all particle lists
 ParticleLists = [ParticleList(particle) for particle in Particles]
@@ -110,6 +113,8 @@ for particle in ParticleLists:
                                               eta=File.GetLeaf(str(particle.name) + '.Eta').GetValue(j),
                                               phi=File.GetLeaf(str(particle.name) + '.Phi').GetValue(j),
                                               m=File.GetLeaf(str(particle.name) + '.Mass').GetValue(j))
+                    ParticleEntity.bTag = File.GetLeaf(str(particle.name) + '.BTag').GetValue(j)
+
                 else:
                     continue
                 particle.list.append(ParticleEntity)
@@ -121,4 +126,15 @@ for particle in ParticleLists:
     plt.xlabel('pT')
     plt.ylabel('Number of particles')
     plt.title(str(particle))
-plt.show()
+    print('Done with ' + str(particle))
+    plt.show()
+
+for particle in ParticleLists:
+    if particle.name == 'Jet':
+        plt.figure(particle.name)
+        plt.hist(particle.getBTag(), bins=100)
+        plt.xlabel('bTag')
+        plt.ylabel('Number of particles')
+        plt.title(str(particle))
+        print('Done with ' + str(particle))
+        plt.show()
