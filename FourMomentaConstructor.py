@@ -55,6 +55,7 @@ class ParticleList:
     def __init__(self, name):
         self.name = name
         self.list: list[Particle] = []
+        self.eventIsolation: list = []
 
     def __str__(self):
         return "{}List".format(self.name)
@@ -71,6 +72,9 @@ class ParticleList:
     def getE(self):
         return [particle.E for particle in self.list]
 
+    def getEvent(self):
+        return [particle.event for particle in self.list]
+
     def getBTag(self):
         if self.name == 'Jet':
             return [particle.bTag for particle in self.list]
@@ -80,12 +84,13 @@ class ParticleList:
 
 # define a list of all particle lists
 ParticleLists = [ParticleList(particle) for particle in Particles]
-print(ParticleLists)
 
 for particle in ParticleLists:
     for i in range(Number):
         Entry = File.GetEntry(i)
         ParticleFromBranch = eval('File.' + particle.name + '.GetEntries()')
+        EventSize = File.GetLeaf(str(particle.name) + '_size').GetValue()
+        particle.eventIsolation.append(EventSize)
 
         # if particle is undefined, skip this event
         if ParticleFromBranch == 0:
@@ -131,6 +136,15 @@ for particle in ParticleLists:
     plt.title(str(particle))
     print('Done with ' + str(particle))
     plt.show()
+    # draw event isolation
+    # print(particle.eventIsolation)
+    plt.figure(particle.name + 'EventIsolation')
+    plt.hist(particle.eventIsolation, bins=100)
+    plt.xlabel('Event Size')
+    plt.ylabel('Number of events')
+    plt.title(str(particle) + ' Event Isolation')
+    print('Done with ' + str(particle) + ' Event Isolation')
+    plt.show()
 
 for particle in ParticleLists:
     if particle.name == 'Jet':
@@ -141,3 +155,32 @@ for particle in ParticleLists:
         plt.title(str(particle))
         print('Done with Jet BTag')
         plt.show()
+
+# fig = plt.figure('3D')
+# ax = fig.add_subplot(projection='3d')
+
+
+# # change pT eta phi to x y z
+# def getXYZ(pT: list, eta: list, phi: list) -> (list, list, list):
+#     x = []
+#     y = []
+#     z = []
+#     for i in range(len(pT)):
+#         x.append(pT[i] * np.cos(phi[i]))
+#         y.append(pT[i] * np.sin(phi[i]))
+#         z.append(pT[i] * np.sinh(eta[i]))
+#     return x, y, z
+#
+#
+# # draw particles in 3D
+# for particle in ParticleLists:
+#     # get only the first event
+#     x, y, z = getXYZ(particle.getPT()[:1], particle.getEta()[:1], particle.getPhi()[:1])
+#     ax.scatter(x, y, z, s=1, label=particle.name)
+#     print('Done with ' + str(particle))
+#
+# ax.set_xlabel('x')
+# ax.set_ylabel('y')
+# ax.set_zlabel('z')
+# ax.legend()
+# plt.show()
